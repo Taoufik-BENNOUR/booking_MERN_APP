@@ -1,5 +1,5 @@
 const express = require("express")
-const { createHotel, updateHotel, deleteHotel, getHotel, getHotels } = require("../controllers/hotelController")
+const { createHotel, updateHotel, deleteHotel, getHotel, getHotels, countByCity, countByType } = require("../controllers/hotelController")
 const createError = require("../utils/error")
 const { isAdmin } = require("../utils/verifyToken")
 
@@ -14,10 +14,12 @@ Router.put("/hotels/:id",isAdmin,updateHotel)
 Router.delete("/hotels/:id",isAdmin,deleteHotel)
 
 //  http://localhost:9000/hotels/:id
-Router.get("/hotels/:id",getHotel)
+Router.get("/hotels/:hotelId",getHotel)
 
 //  http://localhost:9000/hotels
-Router.get("/hotels",getHotels)
+
+Router.get("/countByCity",countByCity)
+Router.get("/countByType",countByType)
 
 
 

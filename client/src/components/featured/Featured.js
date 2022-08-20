@@ -6,8 +6,8 @@ const Featured = () => {
         <div className='featuredItem'>
           <img src='' className='featuredImg'/>
           <div className='featuredTitles'>
-            <h1>Dublin</h1>
-            <h1>props</h1>
+            <h1>Berlin</h1>
+            <h1> </h1>
           </div>
         </div>
         <div className='featuredItem'>

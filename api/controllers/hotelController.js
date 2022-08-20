@@ -35,7 +35,7 @@ exports.deleteHotel = async(req,res,next)=>{
 exports.getHotel = async(req,res,next)=>{
    
     try {
-      const hotel =  await Hotel.findById(req.params.id)
+      const hotel =  await Hotel.findById(req.params.hotelId)
     res.status(200).json({msg:"Hotel found",hotel})
     } catch (error) {
         next(error)
@@ -46,6 +46,28 @@ exports.getHotels = async(req,res,next)=>{
     try {
        const allHotels = await Hotel.find()
     res.status(200).json({msg:"Hotels found",allHotels})
+    } catch (error) {
+        next(error)
+    }
+}
+exports.countByCity = async(req,res,next)=>{
+    const cities = req.query.cities.split(",")
+    try {
+       const list = await Promise.all(cities.map(city=>{
+        return Hotel.countDocuments({city:city})
+       }))
+    res.status(200).json(list)
+    } catch (error) {
+        next(error)
+    }
+}
+exports.countByType = async(req,res,next)=>{
+    const cities = req.query.cities.split(",")
+    try {
+       const list = await Promise.all(cities.map(city=>{
+        return Hotel.countDocuments({city:city})
+       }))
+    res.status(200).json(list)
     } catch (error) {
         next(error)
     }
