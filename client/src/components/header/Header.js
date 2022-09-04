@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { DateRange } from 'react-date-range';
 import 'react-date-range/dist/styles.css'; // main style file
@@ -16,15 +16,19 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import "./header.css";
+import { SearchContext } from "../../context/SearchContext";
+import { AuthContext } from "../../context/AuthContext";
 const Header = ({type}) => {
+
+  const {user} = useContext(AuthContext)
+
   const [destination, setdestination] = useState("")  
-  const [date, setdate] = useState([{
+  const [dates, setdate] = useState([{
     startDate: new Date(),
     endDate:  new Date(),
     key: 'selection'
   }])
   const [OpenDate, setOpenDate] = useState(false)
-
   const [options, setoptions] = useState({
     adult:1,
     children:0,
@@ -37,8 +41,10 @@ const Header = ({type}) => {
       ...prev,[name]:operation === "i" ? options[name] + 1 : options[name] - 1
     }})
   }
+  const {dispatch} = useContext(SearchContext)
   const handleSearch = () =>{
-    destination && navigate("/hotels",{state:{destination,date,options}})
+    dispatch({type:"NEW_SEARCH",payload:{destination,dates,options}})
+    destination && navigate("/hotels",{state:{destination,dates,options}})
   }
   return (
     <div className="header">
@@ -63,7 +69,7 @@ const Header = ({type}) => {
         </div>
         { type !=="list" && <> <h1 className="headerTitle"> hello everybody</h1>
         <p className="headerDescription">lorem</p>
-        <button className="headerBtn">Sign In / Register</button>
+    {!user &&    <button className="headerBtn">Sign In / Register</button>}
         <div className="headerSearch">
           <div className="headerSearchItem">
               <FontAwesomeIcon icon={faBed} className="headerIcon" />

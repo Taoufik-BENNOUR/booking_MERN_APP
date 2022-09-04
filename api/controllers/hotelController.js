@@ -1,4 +1,5 @@
 const Hotel = require("../models/Hotel")
+const Room = require("../models/Room")
 
 
 
@@ -43,8 +44,10 @@ exports.getHotel = async(req,res,next)=>{
 }
 //GET ALL HOTELS 
 exports.getHotels = async(req,res,next)=>{
+    const {min,max,...others} = req.query
     try {
-       const allHotels = await Hotel.find()
+       const allHotels = await Hotel.find({...others,
+        cheapestPrice:{$gt:min |1 ,$lt:max||9999}}).limit(req.query.limit)
     res.status(200).json({msg:"Hotels found",allHotels})
     } catch (error) {
         next(error)
@@ -64,12 +67,23 @@ exports.countByCity = async(req,res,next)=>{
 }
 exports.countByType = async(req,res,next)=>{
         try {
-          const hotelCount =  Hotel.countDocuments({type:"hotel"})
-          const apartmentCount =  Hotel.countDocuments({type:"apartment"})
+          const hotelCount =await  Hotel.countDocuments({type:"hotel"})
+          const apartmentCount = await Hotel.countDocuments({type:"apartment"})
 
     res.status(200).json([
         {type:"hotel",count:hotelCount},
         {type:"apartment",count:apartmentCount}])
+    } catch (error) {
+        next(error)
+    }}
+exports.getHotelRooms = async(req,res,next)=>{
+        try {
+          const hotel = await  Hotel.findById(req.params.id)
+
+          const list = await Promise.all(hotel.rooms.map(room=>{
+            return Room.findById(room)
+          }))
+    res.status(200).json(list)
     } catch (error) {
         next(error)
     }}

@@ -1,5 +1,5 @@
 const express = require("express")
-const { createHotel, updateHotel, deleteHotel, getHotel, getHotels, countByCity, countByType } = require("../controllers/hotelController")
+const { createHotel, updateHotel, deleteHotel, getHotel, getHotels, countByCity, countByType, getHotelRooms } = require("../controllers/hotelController")
 const createError = require("../utils/error")
 const { isAdmin } = require("../utils/verifyToken")
 
@@ -23,5 +23,6 @@ Router.get("/hotels",getHotels)
 
 Router.get("/countByCity",countByCity)
 Router.get("/countByType",countByType)
+Router.get("/room/:id",getHotelRooms)
 
 module.exports = Router

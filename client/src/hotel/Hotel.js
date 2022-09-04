@@ -1,19 +1,35 @@
 import { faArrowLeft, faArrowRight, faCircleXmark, faLocationDot } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import Footer from '../components/footer/Footer'
 import Header from '../components/header/Header'
 import MailList from '../components/mailList/MailList'
 import Navbar from '../components/navbar/Navbar'
+import useFetch from '../../hooks/useFetch'
+
 import "./hotel.css"
+import { SearchContext } from '../context/SearchContext'
+import { AuthContext } from '../context/AuthContext'
+import Reserve from '../components/reserve/Reserve'
 
 const Hotel = () => {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const id = location.pathname.split("/")[2]
+  const {data,loading,error,refetch} = useFetch(`/hotels/${id}`)
+  const {dates} = useContext(SearchContext)
+  const {user} = useContext(AuthContext)
+
   const [slideNumber, setslideNumber] = useState(0)
   const [open, setopen] = useState(false)
+  const [openModal, setopenModal] = useState(false)
+
   const handleopen = (i) =>{
     setslideNumber(i);
     setopen(true)
   }
+  
   const handleMove = (direction) =>{
     let newSlideNumber;
     if(direction ==="l"){
@@ -23,6 +39,13 @@ const Hotel = () => {
       newSlideNumber = slideNumber === photos.length-1 ?0 : slideNumber +1
     }
     setslideNumber(newSlideNumber)
+  }
+  const handleClick = () =>{
+    if(user){setopenModal(true)
+
+    }else{
+      navigate("/login")
+    }
   }
 const photos = [
   {
@@ -57,13 +80,13 @@ const photos = [
         </div>}
         <div className="hotelWrapper" >
           <button className='hotelBook'>Book</button>
-          <h1 className="hotelTitle">Grand Hotel</h1>
+          <h1 className="hotelTitle"> {data.name} </h1>
           <div className="hotelAddress">
             <FontAwesomeIcon icon={faLocationDot} />
             <span>Madrid</span>
           </div>
-          <p className="hotelDistance">Situated near grand</p>
-          <p className="hotelPrice">This is good price</p>
+          <p className="hotelDistance">{data.distance}</p>
+          <p className="hotelPrice">This is good price {data.cheapestPrice}</p>
           <div className="hotelImages">
               {photos.map((photo,i)=>(
                 <div className="hotelImgWrapper">
@@ -73,11 +96,9 @@ const photos = [
           </div>
           <div className="hotelDetails">
             <div className="hotelDetailsTexts">
-              <h2 className="hotelTitle">Phenix</h2>
+              <h2 className="hotelTitle">{data.title}</h2>
               <p className="hotelDesc">
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Dicta modi
-                 laboriosam perferendis dolorem velit expedita minus cum invent
-                 ore et, nesciunt, voluptates dolor. Ipsa dolorum sed facilis ut neque nobis illo?
+              {data.desc}
               </p>
             </div>
             <div className="hotelDetailsPrice">
@@ -85,14 +106,15 @@ const photos = [
               <span>Lorem ipsum, dolor sit amet consectetur adipisicing 
                 elit. Sed at mollitia accusantium. Quaerat suscipit unde omnis iu
                </span>
-               <h3>$551  3nights</h3>
-               <button>Reserve</button>
+               <h3>${days*data.cheapestPrice*options.room}  {days} nights</h3>
+               <button onClick={handleClick}>Reserve</button>
             </div>
           </div>
         </div>
         <MailList /> 
         <Footer />
       </div>
+      {openModal && <Reserve setopen={setopenModal} hotelId={id} />}
     </div>
   )
 }
